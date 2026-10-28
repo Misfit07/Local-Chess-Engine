@@ -97,11 +97,67 @@ public final class TestRunner {
             t.printStackTrace();
         }
 
-        System.out.println("Model and Board Tests: " + passed + " passed, " + failed + " failed.");
+        GameStateTest gameStateTest = new GameStateTest();
+        try {
+            gameStateTest.testCheckDetection();
+            passed++;
+        } catch (Throwable t) {
+            failed++;
+            t.printStackTrace();
+        }
+
+        try {
+            gameStateTest.testFoolsMateCheckmate();
+            passed++;
+        } catch (Throwable t) {
+            failed++;
+            t.printStackTrace();
+        }
+
+        try {
+            gameStateTest.testScholarsMateCheckmate();
+            passed++;
+        } catch (Throwable t) {
+            failed++;
+            t.printStackTrace();
+        }
+
+        try {
+            gameStateTest.testStalemate();
+            passed++;
+        } catch (Throwable t) {
+            failed++;
+            t.printStackTrace();
+        }
+
+        try {
+            gameStateTest.testFiftyMoveRule();
+            passed++;
+        } catch (Throwable t) {
+            failed++;
+            t.printStackTrace();
+        }
+
+        try {
+            gameStateTest.testInsufficientMaterial();
+            passed++;
+        } catch (Throwable t) {
+            failed++;
+            t.printStackTrace();
+        }
+
+        try {
+            gameStateTest.testThreefoldRepetition();
+            passed++;
+        } catch (Throwable t) {
+            failed++;
+            t.printStackTrace();
+        }
+
+        System.out.println("Model, Board and GameState Tests: " + passed + " passed, " + failed + " failed.");
 
         System.out.println("\nRunning Perft Tests...");
         int perftPassed = 0;
-        int perftFailed = 0;
 
         perftPassed += checkPerft("StartPos", START_POS, 1, 20L);
         perftPassed += checkPerft("StartPos", START_POS, 2, 400L);
