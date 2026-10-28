@@ -187,7 +187,48 @@ public final class TestRunner {
             t.printStackTrace();
         }
 
-        System.out.println("Model, Board, GameState and Evaluation Tests: " + passed + " passed, " + failed + " failed.");
+        SearchTest searchTest = new SearchTest();
+        try {
+            searchTest.testFindMateInOne();
+            passed++;
+        } catch (Throwable t) {
+            failed++;
+            t.printStackTrace();
+        }
+
+        try {
+            searchTest.testMateInOneRook();
+            passed++;
+        } catch (Throwable t) {
+            failed++;
+            t.printStackTrace();
+        }
+
+        try {
+            searchTest.testSearchReturnsTopNMovesSorted();
+            passed++;
+        } catch (Throwable t) {
+            failed++;
+            t.printStackTrace();
+        }
+
+        try {
+            searchTest.testTimeControlStopsSearch();
+            passed++;
+        } catch (Throwable t) {
+            failed++;
+            t.printStackTrace();
+        }
+
+        try {
+            searchTest.testCapturePreferredOverLoss();
+            passed++;
+        } catch (Throwable t) {
+            failed++;
+            t.printStackTrace();
+        }
+
+        System.out.println("Model, Board, GameState, Evaluation and Search Tests: " + passed + " passed, " + failed + " failed.");
 
         System.out.println("\nRunning Perft Tests...");
         int perftPassed = 0;
