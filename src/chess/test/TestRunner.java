@@ -228,7 +228,48 @@ public final class TestRunner {
             t.printStackTrace();
         }
 
-        System.out.println("Model, Board, GameState, Evaluation and Search Tests: " + passed + " passed, " + failed + " failed.");
+        ConsoleGameTest consoleTest = new ConsoleGameTest();
+        try {
+            consoleTest.testRenderBoard();
+            passed++;
+        } catch (Throwable t) {
+            failed++;
+            t.printStackTrace();
+        }
+
+        try {
+            consoleTest.testParseValidMove();
+            passed++;
+        } catch (Throwable t) {
+            failed++;
+            t.printStackTrace();
+        }
+
+        try {
+            consoleTest.testParseInvalidMove();
+            passed++;
+        } catch (Throwable t) {
+            failed++;
+            t.printStackTrace();
+        }
+
+        try {
+            consoleTest.testParsePromotionDefaultQueen();
+            passed++;
+        } catch (Throwable t) {
+            failed++;
+            t.printStackTrace();
+        }
+
+        try {
+            consoleTest.testInteractiveGameLoop();
+            passed++;
+        } catch (Throwable t) {
+            failed++;
+            t.printStackTrace();
+        }
+
+        System.out.println("Model, Board, GameState, Evaluation, Search and Console Tests: " + passed + " passed, " + failed + " failed.");
 
         System.out.println("\nRunning Perft Tests...");
         int perftPassed = 0;
