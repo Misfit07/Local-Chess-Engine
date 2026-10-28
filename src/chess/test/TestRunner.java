@@ -335,7 +335,48 @@ public final class TestRunner {
             t.printStackTrace();
         }
 
-        System.out.println("All Model, Board, GameState, Evaluation, Search, Console, GUI and Zobrist/TT Tests: " + passed + " passed, " + failed + " failed.");
+        UciTest uciTest = new UciTest();
+        try {
+            uciTest.testUciAndIsReadyCommands();
+            passed++;
+        } catch (Throwable t) {
+            failed++;
+            t.printStackTrace();
+        }
+
+        try {
+            uciTest.testPositionStartposAndMoves();
+            passed++;
+        } catch (Throwable t) {
+            failed++;
+            t.printStackTrace();
+        }
+
+        try {
+            uciTest.testPositionFenAndGoDepth();
+            passed++;
+        } catch (Throwable t) {
+            failed++;
+            t.printStackTrace();
+        }
+
+        try {
+            uciTest.testGoMovetime();
+            passed++;
+        } catch (Throwable t) {
+            failed++;
+            t.printStackTrace();
+        }
+
+        try {
+            uciTest.testUcinewgame();
+            passed++;
+        } catch (Throwable t) {
+            failed++;
+            t.printStackTrace();
+        }
+
+        System.out.println("All Tests (Model, Board, GameState, Evaluation, Search, Console, GUI, TT, and UCI): " + passed + " passed, " + failed + " failed.");
 
         System.out.println("\nRunning Perft Tests...");
         int perftPassed = 0;
