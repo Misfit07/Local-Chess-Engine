@@ -74,7 +74,7 @@ def build_docx():
     sub_p = doc.add_paragraph()
     sub_p.paragraph_format.space_after = Pt(24)
     sub_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    sub_run = sub_p.add_run("Complete Source Code & Architecture Specification\nTarget JDK 17 • Eclipse Compatible • Zero External Dependencies")
+    sub_run = sub_p.add_run("Core Engine Source Code & Architecture Specification\nTarget JDK 17 • Eclipse Compatible • Zero External Dependencies")
     sub_run.font.name = "Segoe UI"
     sub_run.font.size = Pt(13)
     sub_run.font.color.rgb = RGBColor(100, 100, 100)
@@ -120,27 +120,10 @@ def build_docx():
             ("RepetitionTracker.java", "src/chess/hash/RepetitionTracker.java", "Two-tier repetition tracker for real-game history and search-time stack."),
             ("TranspositionTable.java", "src/chess/hash/TranspositionTable.java", "Hash table storing depths, scores, exact/lower/upper flags, and PV moves keyed by Zobrist hash.")
         ]),
-        ("chess.io (FEN & UCI Protocol)", [
-            ("Fen.java", "src/chess/io/Fen.java", "FEN parser and exporter supporting full 6-component chess positions."),
-            ("Uci.java", "src/chess/io/Uci.java", "Universal Chess Interface protocol supporting uci, isready, ucinewgame, position, go, and quit.")
-        ]),
         ("chess.ui (Swing Graphical & Console Interfaces)", [
             ("BoardPanel.java", "src/chess/ui/BoardPanel.java", "Swing 8x8 chessboard with wood tones, Unicode pieces, highlights, click-to-move, and background AI worker."),
             ("ChessFrame.java", "src/chess/ui/ChessFrame.java", "Main GUI window with menus (Game, Mode, Difficulty, FEN) and live status bar."),
             ("ConsoleGame.java", "src/chess/ui/ConsoleGame.java", "Interactive CLI game with ASCII board rendering, move parsing, and command loop.")
-        ]),
-        ("chess.test (Perft Benchmarks & JUnit Tests)", [
-            ("PerftTest.java", "src/chess/test/PerftTest.java", "Perft node counter and per-move divide debugging for StartPos, Kiwipete, and CPW Positions 3, 4, 5, 6."),
-            ("BoardTest.java", "src/chess/test/BoardTest.java", "Tests for make/unmake exact restoration, Zobrist incremental hash equality, castling, en passant, and promotions."),
-            ("FenTest.java", "src/chess/test/FenTest.java", "Tests for FEN import/export and round trips."),
-            ("GameStateTest.java", "src/chess/test/GameStateTest.java", "Tests for check, checkmate, stalemate, fifty-move rule, insufficient material, and threefold repetition."),
-            ("EvaluationTest.java", "src/chess/test/EvaluationTest.java", "Tests for starting position symmetry, material balance, and MVV-LVA move ordering."),
-            ("SearchTest.java", "src/chess/test/SearchTest.java", "Tests for mate-in-one detection, top-N sorting, and time limit enforcement."),
-            ("ConsoleGameTest.java", "src/chess/test/ConsoleGameTest.java", "Tests for console board rendering, move parsing, and auto Queen promotion."),
-            ("GuiTest.java", "src/chess/test/GuiTest.java", "Tests for GUI initialization, board flipping, and side selection."),
-            ("ZobristAndTableTest.java", "src/chess/test/ZobristAndTableTest.java", "Tests for TT store/probe, distance-adjusted mate scores, and 40-step random move hash matching."),
-            ("UciTest.java", "src/chess/test/UciTest.java", "Tests for UCI protocol commands."),
-            ("TestRunner.java", "src/chess/test/TestRunner.java", "Master test suite runner executing all 44 unit tests and 26 Perft test cases.")
         ])
     ]
 
