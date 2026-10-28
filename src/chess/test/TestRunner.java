@@ -154,7 +154,40 @@ public final class TestRunner {
             t.printStackTrace();
         }
 
-        System.out.println("Model, Board and GameState Tests: " + passed + " passed, " + failed + " failed.");
+        EvaluationTest evalTest = new EvaluationTest();
+        try {
+            evalTest.testStartingPositionSymmetry();
+            passed++;
+        } catch (Throwable t) {
+            failed++;
+            t.printStackTrace();
+        }
+
+        try {
+            evalTest.testMaterialAdvantage();
+            passed++;
+        } catch (Throwable t) {
+            failed++;
+            t.printStackTrace();
+        }
+
+        try {
+            evalTest.testPositionalKnightCentralBonus();
+            passed++;
+        } catch (Throwable t) {
+            failed++;
+            t.printStackTrace();
+        }
+
+        try {
+            evalTest.testMoveOrdering();
+            passed++;
+        } catch (Throwable t) {
+            failed++;
+            t.printStackTrace();
+        }
+
+        System.out.println("Model, Board, GameState and Evaluation Tests: " + passed + " passed, " + failed + " failed.");
 
         System.out.println("\nRunning Perft Tests...");
         int perftPassed = 0;
