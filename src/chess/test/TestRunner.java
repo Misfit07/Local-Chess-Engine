@@ -302,7 +302,40 @@ public final class TestRunner {
             t.printStackTrace();
         }
 
-        System.out.println("Model, Board, GameState, Evaluation, Search, Console and GUI Tests: " + passed + " passed, " + failed + " failed.");
+        ZobristAndTableTest zobristTest = new ZobristAndTableTest();
+        try {
+            zobristTest.testTranspositionTableStoreAndProbe();
+            passed++;
+        } catch (Throwable t) {
+            failed++;
+            t.printStackTrace();
+        }
+
+        try {
+            zobristTest.testMateScoreDistanceAdjustmentInTable();
+            passed++;
+        } catch (Throwable t) {
+            failed++;
+            t.printStackTrace();
+        }
+
+        try {
+            zobristTest.testIncrementalHashEqualsFromScratchAfterRandomMoves();
+            passed++;
+        } catch (Throwable t) {
+            failed++;
+            t.printStackTrace();
+        }
+
+        try {
+            zobristTest.testSearchWithTranspositionTableEfficiency();
+            passed++;
+        } catch (Throwable t) {
+            failed++;
+            t.printStackTrace();
+        }
+
+        System.out.println("All Model, Board, GameState, Evaluation, Search, Console, GUI and Zobrist/TT Tests: " + passed + " passed, " + failed + " failed.");
 
         System.out.println("\nRunning Perft Tests...");
         int perftPassed = 0;

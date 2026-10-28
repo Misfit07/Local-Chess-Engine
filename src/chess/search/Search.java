@@ -1,6 +1,7 @@
 package chess.search;
 
 import chess.hash.RepetitionTracker;
+import chess.hash.TranspositionTable;
 import chess.model.Board;
 import chess.model.GameStateDetector;
 import chess.model.Move;
@@ -17,6 +18,7 @@ public final class Search {
 
     private final Evaluator evaluator;
     private final RepetitionTracker repetitionTracker;
+    private final TranspositionTable transpositionTable;
 
     private long nodes;
     private long stopTimeMs;
@@ -24,16 +26,25 @@ public final class Search {
     private boolean timeExceeded;
 
     public Search() {
-        this(new MaterialPstEvaluator(), new RepetitionTracker());
+        this(new MaterialPstEvaluator(), new RepetitionTracker(), new TranspositionTable());
     }
 
     public Search(Evaluator evaluator) {
-        this(evaluator, new RepetitionTracker());
+        this(evaluator, new RepetitionTracker(), new TranspositionTable());
     }
 
     public Search(Evaluator evaluator, RepetitionTracker repetitionTracker) {
+        this(evaluator, repetitionTracker, new TranspositionTable());
+    }
+
+    public Search(Evaluator evaluator, RepetitionTracker repetitionTracker, TranspositionTable transpositionTable) {
         this.evaluator = evaluator;
         this.repetitionTracker = repetitionTracker;
+        this.transpositionTable = transpositionTable != null ? transpositionTable : new TranspositionTable();
+    }
+
+    public TranspositionTable getTranspositionTable() {
+        return transpositionTable;
     }
 
     public SearchResult search(Board board, int maxDepth) {
@@ -63,6 +74,8 @@ public final class Search {
         this.timeExceeded = false;
         this.nodes = 0;
 
+        transpositionTable.newSearch();
+
         Move bestMoveOverall = legalMoves.get(0);
         int bestScoreOverall = -INFINITY;
         int completedDepth = 0;
@@ -73,11 +86,14 @@ public final class Search {
             Move currentBestMove = null;
             int currentBestScore = -INFINITY;
 
-            if (bestMoveOverall != null) {
-                final Move prevBest = bestMoveOverall;
+            TranspositionTable.Entry rootEntry = transpositionTable.probe(board.getZobristHash());
+            Move preferredMove = (rootEntry != null && rootEntry.move != null) ? rootEntry.move : bestMoveOverall;
+
+            if (preferredMove != null) {
+                final Move pvMove = preferredMove;
                 legalMoves.sort((m1, m2) -> {
-                    if (m1.equals(prevBest)) return -1;
-                    if (m2.equals(prevBest)) return 1;
+                    if (m1.equals(pvMove)) return -1;
+                    if (m2.equals(pvMove)) return 1;
                     return Integer.compare(MoveOrderer.scoreMove(m2), MoveOrderer.scoreMove(m1));
                 });
             } else {
@@ -120,6 +136,8 @@ public final class Search {
             bestScoreOverall = currentBestScore;
             completedDepth = depth;
 
+            transpositionTable.store(board.getZobristHash(), completedDepth, bestScoreOverall, TranspositionTable.EXACT, bestMoveOverall, 0);
+
             if (bestScoreOverall >= MATE_SCORE - 100) {
                 break;
             }
@@ -149,6 +167,21 @@ public final class Search {
             }
         }
 
+        int alphaOrig = alpha;
+        TranspositionTable.Entry entry = transpositionTable.probe(board.getZobristHash());
+        if (entry != null && entry.depth >= depth && ply > 0) {
+            int ttScore = entry.getScore(ply);
+            if (entry.flag == TranspositionTable.EXACT) {
+                return ttScore;
+            } else if (entry.flag == TranspositionTable.LOWERBOUND) {
+                if (ttScore >= beta) return ttScore;
+                if (ttScore > alpha) alpha = ttScore;
+            } else if (entry.flag == TranspositionTable.UPPERBOUND) {
+                if (ttScore <= alpha) return ttScore;
+                if (ttScore < beta) beta = ttScore;
+            }
+        }
+
         if (depth <= 0 || ply >= MAX_PLY) {
             return quiescence(board, alpha, beta, ply);
         }
@@ -163,9 +196,20 @@ public final class Search {
             return 0;
         }
 
-        MoveOrderer.orderMoves(moves);
+        Move ttMove = (entry != null) ? entry.move : null;
+        if (ttMove != null) {
+            moves.sort((m1, m2) -> {
+                if (m1.equals(ttMove)) return -1;
+                if (m2.equals(ttMove)) return 1;
+                return Integer.compare(MoveOrderer.scoreMove(m2), MoveOrderer.scoreMove(m1));
+            });
+        } else {
+            MoveOrderer.orderMoves(moves);
+        }
 
         int bestScore = -INFINITY;
+        Move bestMoveThisNode = null;
+
         for (Move move : moves) {
             board.makeMove(move);
             repetitionTracker.pushSearchPosition(board.getZobristHash());
@@ -181,6 +225,7 @@ public final class Search {
 
             if (score > bestScore) {
                 bestScore = score;
+                bestMoveThisNode = move;
             }
             if (score > alpha) {
                 alpha = score;
@@ -188,6 +233,18 @@ public final class Search {
             if (alpha >= beta) {
                 break;
             }
+        }
+
+        if (!timeExceeded) {
+            byte flag;
+            if (bestScore <= alphaOrig) {
+                flag = TranspositionTable.UPPERBOUND;
+            } else if (bestScore >= beta) {
+                flag = TranspositionTable.LOWERBOUND;
+            } else {
+                flag = TranspositionTable.EXACT;
+            }
+            transpositionTable.store(board.getZobristHash(), depth, bestScore, flag, bestMoveThisNode, ply);
         }
 
         return bestScore;
