@@ -269,7 +269,40 @@ public final class TestRunner {
             t.printStackTrace();
         }
 
-        System.out.println("Model, Board, GameState, Evaluation, Search and Console Tests: " + passed + " passed, " + failed + " failed.");
+        GuiTest guiTest = new GuiTest();
+        try {
+            guiTest.testChessFrameCreation();
+            passed++;
+        } catch (Throwable t) {
+            failed++;
+            t.printStackTrace();
+        }
+
+        try {
+            guiTest.testBoardPanelFlipping();
+            passed++;
+        } catch (Throwable t) {
+            failed++;
+            t.printStackTrace();
+        }
+
+        try {
+            guiTest.testBoardPanelHumanSide();
+            passed++;
+        } catch (Throwable t) {
+            failed++;
+            t.printStackTrace();
+        }
+
+        try {
+            guiTest.testBoardPanelSetBoard();
+            passed++;
+        } catch (Throwable t) {
+            failed++;
+            t.printStackTrace();
+        }
+
+        System.out.println("Model, Board, GameState, Evaluation, Search, Console and GUI Tests: " + passed + " passed, " + failed + " failed.");
 
         System.out.println("\nRunning Perft Tests...");
         int perftPassed = 0;
